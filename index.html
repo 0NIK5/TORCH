@@ -131,14 +131,59 @@
     </style>
 </head>
 <body>
+    <script>
+        // Функция для сохранения состояния чекбоксов
+        function saveCheckboxState() {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const states = {};
+            
+            checkboxes.forEach((checkbox, index) => {
+                states[index] = checkbox.checked;
+            });
+            
+            // Сохраняем состояния в памяти (используем переменную вместо localStorage)
+            window.checkboxStates = states;
+        }
+
+        // Функция для загрузки состояния чекбоксов
+        function loadCheckboxState() {
+            if (window.checkboxStates) {
+                const checkboxes = document.querySelectorAll('.checkbox');
+                
+                checkboxes.forEach((checkbox, index) => {
+                    if (window.checkboxStates[index] !== undefined) {
+                        checkbox.checked = window.checkboxStates[index];
+                    }
+                });
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Пытаемся восстановить состояние из данных, сохраненных в скрипте
+            const savedStates = JSON.parse(sessionStorage.getItem('checkboxStates') || '{}');
+            window.checkboxStates = savedStates;
+            
+            loadCheckboxState();
+            
+            // Добавляем обработчики событий для всех чекбоксов
+            const checkboxes = document.querySelectorAll('.checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    saveCheckboxState();
+                    // Сохраняем в sessionStorage для восстановления после обновления
+                    sessionStorage.setItem('checkboxStates', JSON.stringify(window.checkboxStates));
+                });
+            });
+        });
+    </script>
     <div class="container">
         <h1>Варики:</h1>
         <div class="links-list">
-            </a>
-            <a href="https://veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive-400-lyumen-8-rezhimov-fioletovaya" target="_blank" class="link-item">
+            <a href="https://rozetka.com.ua/ua/361908282/p361908282/" target="_blank" class="link-item">
                 <input type="checkbox" class="checkbox">
                 <div class="link-number">1</div>
-                <div class="link-text">veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive-400-lyumen-8-rezhimov-fioletovaya</div>
+                <div class="link-text">rozetka.com.ua/ua/361908282/p361908282/</div>
             </a>
             <a href="https://rozetka.com.ua/ua/373058862/p373058862/" target="_blank" class="link-item">
                 <input type="checkbox" class="checkbox">
@@ -174,10 +219,11 @@
                 <input type="checkbox" class="checkbox">
                 <div class="link-number">8</div>
                 <div class="link-text">veloplaneta.ua/ua/fara-perednyaya-infini-super-lava-i-263p-titanium-black-1-svetodiod-3w-4-rezhima-usb-kabel-s-krepl</div>
-            <a href="https://rozetka.com.ua/ua/361908282/p361908282/" target="_blank" class="link-item">
+            </a>
+            <a href="https://veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive-400-lyumen-8-rezhimov-fioletovaya" target="_blank" class="link-item">
                 <input type="checkbox" class="checkbox">
                 <div class="link-number">9</div>
-                <div class="link-text">rozetka.com.ua/ua/361908282/p361908282/</div>
+                <div class="link-text">veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive-400-lyumen-8-rezhimov-fioletovaya</div>
             </a>
         </div>
     </div>
