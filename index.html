@@ -79,6 +79,18 @@
             border: 1px solid rgba(255, 193, 7, 0.3);
         }
 
+        .debug-info {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
         .status-dot {
             width: 8px;
             height: 8px;
@@ -260,6 +272,13 @@
             <span>Локальное сохранение</span>
         </div>
 
+        <div id="debugInfo" class="debug-info" style="display: none;">
+            <strong>Отладочная информация:</strong><br>
+            <div id="debugLog"></div>
+            <button onclick="checkboxSync.testSync()" style="margin-top: 5px; padding: 5px 10px; font-size: 11px;">Тест синхронизации</button>
+            <button onclick="checkboxSync.clearDebug()" style="margin-top: 5px; padding: 5px 10px; font-size: 11px;">Очистить лог</button>
+        </div>
+
         <div id="setupPanel" class="setup-panel">
             <div class="setup-title">
                 🔧 Настройка синхронизации между устройствами
@@ -327,19 +346,42 @@
     <script>
         class CheckboxSync {
             constructor() {
-                this.token = null;
-                this.gistId = null;
+                this.token = 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;
+                this.gistId = 75331ddb57d28bbe76f7c284e76803e7#file-checkbox-states-json;
                 this.syncInterval = null;
                 this.lastSync = 0;
                 this.syncInProgress = false;
                 this.filename = 'checkbox-states.json';
+                this.debugMode = true; // Включаем отладку
                 
                 this.init();
             }
 
+            log(message) {
+                if (this.debugMode) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    const logElement = document.getElementById('debugLog');
+                    if (logElement) {
+                        logElement.innerHTML += `[${timestamp}] ${message}<br>`;
+                        logElement.scrollTop = logElement.scrollHeight;
+                    }
+                    console.log(`[CheckboxSync] ${message}`);
+                }
+            }
+
+            clearDebug() {
+                const logElement = document.getElementById('debugLog');
+                if (logElement) {
+                    logElement.innerHTML = '';
+                }
+            }
+
             async init() {
+                this.log('Инициализация CheckboxSync...');
+                
                 // Загружаем сохраненную конфигурацию
                 this.loadConfig();
+                this.log(`Конфигурация загружена. Token: ${this.token ? 'есть' : 'нет'}, GistId: ${this.gistId || 'нет'}`);
                 
                 // Загружаем состояние чекбоксов
                 await this.loadStates();
@@ -350,9 +392,15 @@
                 // Если есть токен, запускаем синхронизацию
                 if (this.token) {
                     this.startSync();
+                    this.log('Синхронизация запущена');
                 }
                 
                 this.updateStatus();
+                
+                // Показываем отладочную информацию если токен настроен
+                if (this.token) {
+                    document.getElementById('debugInfo').style.display = 'block';
+                }
             }
 
             loadConfig() {
@@ -371,14 +419,23 @@
             setupEventListeners() {
                 // Обработчики для чекбоксов
                 document.querySelectorAll('.checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', () => {
-                        this.saveStates();
+                    checkbox.addEventListener('change', async () => {
+                        await this.saveStates();
+                        // Форсируем синхронизацию на других устройствах через 0.5 секунды
+                        setTimeout(() => this.syncFromGitHub(), 500);
                     });
                 });
 
                 // Обработчик для видимости страницы (синхронизация при возврате)
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden && this.token) {
+                        this.syncFromGitHub();
+                    }
+                });
+
+                // Обработчик для фокуса окна
+                window.addEventListener('focus', () => {
+                    if (this.token) {
                         this.syncFromGitHub();
                     }
                 });
@@ -529,8 +586,12 @@
 
                 const githubData = await this.loadFromGitHub();
                 if (githubData && githubData.timestamp > this.lastSync) {
+                    console.log('Синхронизация: обновляем состояния с GitHub');
                     this.applyStates(githubData.states);
                     this.lastSync = githubData.timestamp;
+                    
+                    // Обновляем статус
+                    this.updateSyncIndicator();
                 }
             }
 
@@ -539,10 +600,10 @@
                     clearInterval(this.syncInterval);
                 }
                 
-                // Синхронизируем каждые 3 секунды
+                // Синхронизируем каждые 2 секунды для более быстрой синхронизации
                 this.syncInterval = setInterval(() => {
                     this.syncFromGitHub();
-                }, 3000);
+                }, 2000);
             }
 
             stopSync() {
