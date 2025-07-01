@@ -87,7 +87,7 @@
             font-family: monospace;
             font-size: 12px;
             text-align: left;
-            max-height: 150px;
+            max-height: 200px;
             overflow-y: auto;
         }
 
@@ -179,6 +179,21 @@
         .setup-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .debug-button {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin: 2px;
+        }
+
+        .debug-button:hover {
+            background: #7f8c8d;
         }
 
         .links-list {
@@ -275,8 +290,9 @@
         <div id="debugInfo" class="debug-info" style="display: none;">
             <strong>Отладочная информация:</strong><br>
             <div id="debugLog"></div>
-            <button onclick="checkboxSync.testSync()" style="margin-top: 5px; padding: 5px 10px; font-size: 11px;">Тест синхронизации</button>
-            <button onclick="checkboxSync.clearDebug()" style="margin-top: 5px; padding: 5px 10px; font-size: 11px;">Очистить лог</button>
+            <button onclick="checkboxSync.testSync()" class="debug-button">Тест синхронизации</button>
+            <button onclick="checkboxSync.clearDebug()" class="debug-button">Очистить лог</button>
+            <button onclick="checkboxSync.resetConfig()" class="debug-button">Сбросить настройки</button>
         </div>
 
         <div id="setupPanel" class="setup-panel">
@@ -344,26 +360,30 @@
     </div>
 
     <script>
-
         class CheckboxSync {
             constructor() {
                 this.token = null;
-                this.gistId = '5d7a1710f3387801a0a90e2018e39d6e';
+                this.gistId = null;
                 this.syncInterval = null;
                 this.lastSync = 0;
                 this.syncInProgress = false;
                 this.filename = 'checkbox-states.json';
-                this.debugMode = true; // Включаем отладку
+                this.debugMode = false; // Отключаем по умолчанию
+                this.syncDelay = 3000; // 3 секунды между синхронизациями
+                this.maxRetries = 3;
+                this.retryDelay = 1000;
                 
                 this.init();
             }
 
-            log(message) {
+            log(message, type = 'info') {
                 if (this.debugMode) {
                     const timestamp = new Date().toLocaleTimeString();
                     const logElement = document.getElementById('debugLog');
+                    const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+                    
                     if (logElement) {
-                        logElement.innerHTML += `[${timestamp}] ${message}<br>`;
+                        logElement.innerHTML += `[${timestamp}] ${prefix} ${message}<br>`;
                         logElement.scrollTop = logElement.scrollHeight;
                     }
                     console.log(`[CheckboxSync] ${message}`);
@@ -390,53 +410,79 @@
                 // Настраиваем обработчики событий
                 this.setupEventListeners();
                 
-                // Если есть токен, запускаем синхронизацию
+                // Если есть токен, проверяем gist и запускаем синхронизацию
                 if (this.token) {
-                    this.startSync();
-                    this.log('Синхронизация запущена');
+                    if (!this.gistId) {
+                        this.log('Gist ID отсутствует, создаем новый Gist...');
+                        await this.createGist();
+                    }
+                    
+                    if (this.gistId) {
+                        this.startSync();
+                        this.log('Синхронизация запущена', 'success');
+                        this.debugMode = true;
+                        document.getElementById('debugInfo').style.display = 'block';
+                    }
                 }
                 
                 this.updateStatus();
-                
-                // Показываем отладочную информацию если токен настроен
-                if (this.token) {
-                    document.getElementById('debugInfo').style.display = 'block';
-                }
             }
 
             loadConfig() {
-                const config = JSON.parse(localStorage.getItem('checkboxSyncConfig') || '{}');
-                this.token = config.token;
-                this.gistId = config.gistId;
+                try {
+                    const config = JSON.parse(localStorage.getItem('checkboxSyncConfig') || '{}');
+                    this.token = config.token || null;
+                    this.gistId = config.gistId || null;
+                } catch (error) {
+                    this.log('Ошибка загрузки конфигурации: ' + error.message, 'error');
+                }
             }
 
             saveConfig() {
-                localStorage.setItem('checkboxSyncConfig', JSON.stringify({
-                    token: this.token,
-                    gistId: this.gistId
-                }));
+                try {
+                    localStorage.setItem('checkboxSyncConfig', JSON.stringify({
+                        token: this.token,
+                        gistId: this.gistId
+                    }));
+                    this.log('Конфигурация сохранена');
+                } catch (error) {
+                    this.log('Ошибка сохранения конфигурации: ' + error.message, 'error');
+                }
             }
 
             setupEventListeners() {
-                // Обработчики для чекбоксов
+                // Обработчики для чекбоксов с debounce
+                let saveTimeout;
                 document.querySelectorAll('.checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', async () => {
-                        await this.saveStates();
-                        // Форсируем синхронизацию на других устройствах через 0.5 секунды
-                        setTimeout(() => this.syncFromGitHub(), 500);
+                    checkbox.addEventListener('change', () => {
+                        clearTimeout(saveTimeout);
+                        saveTimeout = setTimeout(async () => {
+                            await this.saveStates();
+                            this.log(`Чекбокс ${checkbox.getAttribute('data-id')} изменен на ${checkbox.checked}`);
+                        }, 300);
                     });
                 });
 
-                // Обработчик для видимости страницы (синхронизация при возврате)
+                // Обработчик для видимости страницы
                 document.addEventListener('visibilitychange', () => {
-                    if (!document.hidden && this.token) {
-                        this.syncFromGitHub();
+                    if (!document.hidden && this.token && this.gistId) {
+                        this.log('Страница стала видимой, синхронизируемся...');
+                        setTimeout(() => this.syncFromGitHub(), 500);
                     }
                 });
 
                 // Обработчик для фокуса окна
                 window.addEventListener('focus', () => {
-                    if (this.token) {
+                    if (this.token && this.gistId) {
+                        this.log('Окно получило фокус, синхронизируемся...');
+                        setTimeout(() => this.syncFromGitHub(), 500);
+                    }
+                });
+
+                // Обработчик для подключения к интернету
+                window.addEventListener('online', () => {
+                    if (this.token && this.gistId) {
+                        this.log('Подключение к интернету восстановлено, синхронизируемся...');
                         this.syncFromGitHub();
                     }
                 });
@@ -451,85 +497,143 @@
                 return states;
             }
 
-            applyStates(states) {
+            applyStates(states, skipConflictCheck = false) {
+                if (!skipConflictCheck) {
+                    // Проверяем на конфликты
+                    const currentStates = this.getCurrentStates();
+                    let hasConflicts = false;
+                    
+                    for (const [id, newState] of Object.entries(states)) {
+                        if (currentStates[id] !== undefined && currentStates[id] !== newState) {
+                            hasConflicts = true;
+                            break;
+                        }
+                    }
+                    
+                    if (hasConflicts) {
+                        this.log('Обнаружены конфликты, применяем удаленные изменения', 'info');
+                    }
+                }
+
                 document.querySelectorAll('.checkbox').forEach(checkbox => {
                     const id = checkbox.getAttribute('data-id');
                     if (states[id] !== undefined) {
                         checkbox.checked = states[id];
                     }
                 });
+                
+                this.log(`Применены состояния: ${JSON.stringify(states)}`);
             }
 
             async saveStates() {
                 const states = this.getCurrentStates();
                 
                 // Сохраняем локально
-                localStorage.setItem('checkboxStates', JSON.stringify(states));
+                try {
+                    localStorage.setItem('checkboxStates', JSON.stringify(states));
+                    this.log('Состояния сохранены локально');
+                } catch (error) {
+                    this.log('Ошибка локального сохранения: ' + error.message, 'error');
+                }
                 
                 // Сохраняем на GitHub, если настроено
                 if (this.token && this.gistId) {
-                    await this.saveToGitHub(states);
+                    const success = await this.saveToGitHub(states);
+                    if (success) {
+                        this.log('Состояния синхронизированы с GitHub', 'success');
+                    }
                 }
             }
 
             async loadStates() {
                 // Сначала пытаемся загрузить с GitHub
                 if (this.token && this.gistId) {
-                    const githubStates = await this.loadFromGitHub();
-                    if (githubStates) {
-                        this.applyStates(githubStates.states);
-                        this.lastSync = githubStates.timestamp || 0;
+                    const githubData = await this.loadFromGitHub();
+                    if (githubData && githubData.states) {
+                        this.applyStates(githubData.states, true);
+                        this.lastSync = githubData.timestamp || 0;
+                        this.log('Состояния загружены с GitHub', 'success');
                         return;
                     }
                 }
                 
                 // Если GitHub недоступен, загружаем локально
-                const localStates = JSON.parse(localStorage.getItem('checkboxStates') || '{}');
-                this.applyStates(localStates);
+                try {
+                    const localStates = JSON.parse(localStorage.getItem('checkboxStates') || '{}');
+                    this.applyStates(localStates, true);
+                    this.log('Состояния загружены локально');
+                } catch (error) {
+                    this.log('Ошибка загрузки локальных состояний: ' + error.message, 'error');
+                }
             }
 
-        async createGist() {
-            if (!this.token) return null;
+            async createGist() {
+                if (!this.token) {
+                    this.log('Токен отсутствует, не могу создать Gist', 'error');
+                    return null;
+                }
 
-            try {
-                const response = await fetch('https://api.github.com/gists', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `token ${this.token}`,
-                        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            description: 'Checkbox states synchronization',
-            public: false,
-            files: {
-                [this.filename]: {
-                    content: JSON.stringify({
-                        states: {},
-                        timestamp: Date.now()
-                         })
-                      }
-                  }
-              })
-          });
+                try {
+                    const initialData = {
+                        states: this.getCurrentStates(),
+                        timestamp: Date.now(),
+                        version: '1.0'
+                    };
 
-          if (response.ok) {
-             const gist = await response.json();
-              this.gistId = gist.id;
-              this.saveConfig();
-              return gist.id;
-          }
+                    const response = await this.fetchWithRetry('https://api.github.com/gists', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `token ${this.token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            description: 'Checkbox states synchronization',
+                            public: false,
+                            files: {
+                                [this.filename]: {
+                                    content: JSON.stringify(initialData, null, 2)
+                                }
+                            }
+                        })
+                    });
+
+                    if (response.ok) {
+                        const gist = await response.json();
+                        this.gistId = gist.id;
+                        this.saveConfig();
+                        this.log(`Gist создан успешно: ${gist.id}`, 'success');
+                        return gist.id;
+                    } else {
+                        const errorData = await response.json();
+                        this.log(`Ошибка создания Gist: ${response.status} - ${errorData.message}`, 'error');
+                    }
                 } catch (error) {
-                    console.error('Ошибка создания Gist:', error);
+                    this.log('Ошибка создания Gist: ' + error.message, 'error');
                 }
                 return null;
+            }
+
+            async fetchWithRetry(url, options, retries = this.maxRetries) {
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        const response = await fetch(url, options);
+                        if (response.ok || response.status === 404) {
+                            return response;
+                        }
+                        throw new Error(`HTTP ${response.status}`);
+                    } catch (error) {
+                        this.log(`Попытка ${i + 1}/${retries} неудачна: ${error.message}`, 'error');
+                        if (i === retries - 1) throw error;
+                        await new Promise(resolve => setTimeout(resolve, this.retryDelay * (i + 1)));
+                    }
+                }
             }
 
             async loadFromGitHub() {
                 if (!this.token || !this.gistId) return null;
 
                 try {
-                    const response = await fetch(`https://api.github.com/gists/${this.gistId}`, {
-
+                    const response = await this.fetchWithRetry(`https://api.github.com/gists/${this.gistId}`, {
                         headers: {
                             'Authorization': `token ${this.token}`
                         }
@@ -538,10 +642,18 @@
                     if (response.ok) {
                         const gist = await response.json();
                         const content = gist.files[this.filename]?.content;
-                        return content ? JSON.parse(content) : null;
+                        if (content) {
+                            const data = JSON.parse(content);
+                            this.log('Данные загружены с GitHub');
+                            return data;
+                        }
+                    } else if (response.status === 404) {
+                        this.log('Gist не найден, создаем новый...', 'info');
+                        this.gistId = null;
+                        await this.createGist();
                     }
                 } catch (error) {
-                    console.error('Ошибка загрузки с GitHub:', error);
+                    this.log('Ошибка загрузки с GitHub: ' + error.message, 'error');
                 }
                 return null;
             }
@@ -552,7 +664,13 @@
                 this.syncInProgress = true;
 
                 try {
-                    const response = await fetch(`https://api.github.com/gists/${this.gistId}`, {
+                    const data = {
+                        states: states,
+                        timestamp: Date.now(),
+                        version: '1.0'
+                    };
+
+                    const response = await this.fetchWithRetry(`https://api.github.com/gists/${this.gistId}`, {
                         method: 'PATCH',
                         headers: {
                             'Authorization': `token ${this.token}`,
@@ -561,10 +679,7 @@
                         body: JSON.stringify({
                             files: {
                                 [this.filename]: {
-                                    content: JSON.stringify({
-                                        states: states,
-                                        timestamp: Date.now()
-                                    })
+                                    content: JSON.stringify(data, null, 2)
                                 }
                             }
                         })
@@ -574,47 +689,52 @@
                         this.lastSync = Date.now();
                         this.updateStatus();
                         return true;
+                    } else {
+                        const errorData = await response.json();
+                        this.log(`Ошибка сохранения в GitHub: ${response.status} - ${errorData.message}`, 'error');
                     }
                 } catch (error) {
-                    console.error('Ошибка сохранения в GitHub:', error);
+                    this.log('Ошибка сохранения в GitHub: ' + error.message, 'error');
                 } finally {
                     this.syncInProgress = false;
                 }
                 return false;
             }
 
-
             async syncFromGitHub() {
                 if (!this.token || !this.gistId || this.syncInProgress) return;
 
                 const githubData = await this.loadFromGitHub();
                 if (githubData && githubData.timestamp > this.lastSync) {
-                    console.log('Синхронизация: обновляем состояния с GitHub');
+                    this.log('Обновляем состояния с GitHub', 'success');
                     this.applyStates(githubData.states);
                     this.lastSync = githubData.timestamp;
                     
-                    // Обновляем статус
-                    this.updateSyncIndicator();
+                    // Сохраняем локально новые состояния
+                    localStorage.setItem('checkboxStates', JSON.stringify(githubData.states));
+                    
+                    this.updateStatus();
+                } else if (githubData) {
+                    this.log('Удаленные данные не новее локальных');
                 }
             }
 
-
             startSync() {
-                if (this.syncInterval) {
-                    clearInterval(this.syncInterval);
-                }
+                this.stopSync(); // Останавливаем предыдущий интервал
                 
-                // Синхронизируем каждые 2 секунды для более быстрой синхронизации
+                // Синхронизируем каждые 3 секунды
                 this.syncInterval = setInterval(() => {
                     this.syncFromGitHub();
-                }, 2000);
+                }, this.syncDelay);
 
+                this.log(`Синхронизация запущена (интервал: ${this.syncDelay}ms)`);
             }
 
             stopSync() {
                 if (this.syncInterval) {
                     clearInterval(this.syncInterval);
                     this.syncInterval = null;
+                    this.log('Синхронизация остановлена');
                 }
             }
 
@@ -636,6 +756,7 @@
             }
 
             async setupWithToken(token) {
+                this.log('Настройка синхронизации с токеном...');
                 this.token = token;
                 
                 // Создаем новый Gist
@@ -650,10 +771,41 @@
                     this.startSync();
                     this.updateStatus();
                     
+                    // Включаем режим отладки
+                    this.debugMode = true;
+                    document.getElementById('debugInfo').style.display = 'block';
+                    
+                    this.log('Синхронизация настроена успешно!', 'success');
                     alert('Синхронизация настроена успешно!');
                 } else {
+                    this.log('Ошибка настройки синхронизации', 'error');
                     alert('Ошибка настройки синхронизации. Проверьте токен.');
                     this.token = null;
+                }
+            }
+
+            async testSync() {
+                if (!this.token || !this.gistId) {
+                    alert('Синхронизация не настроена');
+                    return;
+                }
+                
+                this.log('Запуск тестовой синхронизации...');
+                await this.syncFromGitHub();
+                this.log('Тестовая синхронизация завершена');
+            }
+
+            resetConfig() {
+                if (confirm('Вы уверены, что хотите сбросить все настройки синхронизации?')) {
+                    this.stopSync();
+                    this.token = null;
+                    this.gistId = null;
+                    localStorage.removeItem('checkboxSyncConfig');
+                    this.debugMode = false;
+                    document.getElementById('debugInfo').style.display = 'none';
+                    this.updateStatus();
+                    this.log('Настройки сброшены', 'success');
+                    alert('Настройки синхронизации сброшены');
                 }
             }
         }
@@ -671,7 +823,7 @@
             }
             
             if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
-                alert('Неверный формат токена GitHub');
+                alert('Неверный формат токена GitHub. Токен должен начинаться с ghp_ или github_pat_');
                 return;
             }
             
@@ -680,11 +832,6 @@
         }
 
         // Инициализация при загрузке страницы
-
         document.addEventListener('DOMContentLoaded', () => {
             checkboxSync = new CheckboxSync();
-
         });
-    </script>
-</body>
-</html>
