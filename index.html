@@ -487,36 +487,36 @@
                 this.applyStates(localStates);
             }
 
-            async createGist() {
-                if (!this.token) return null;
+         //   async createGist() {
+         //       if (!this.token) return null;
 
-                try {
-                    const response = await fetch('https://api.github.com/gists', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `token ${this.token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            description: 'Checkbox states synchronization',
-                            public: false,
-                            files: {
-                                [this.filename]: {
-                                    content: JSON.stringify({
-                                        states: {},
-                                        timestamp: Date.now()
-                                    })
-                                }
-                            }
-                        })
-                    });
-
-                    if (response.ok) {
-                        const gist = await response.json();
-                        this.gistId = gist.id;
-                        this.saveConfig();
-                        return gist.id;
-                    }
+         //       try {
+         //           const response = await fetch('https://api.github.com/gists', {
+          //              method: 'POST',
+          //              headers: {
+          //                  'Authorization': `token ${this.token}`,
+           //                 'Content-Type': 'application/json'
+            //            },
+            //            body: JSON.stringify({
+             //               description: 'Checkbox states synchronization',
+            //                public: false,
+             //               files: {
+              //                  [this.filename]: {
+                 //                   content: JSON.stringify({
+               //                         states: {},
+              //                          timestamp: Date.now()
+               //                     })
+              //                  }
+              //              }
+              //          })
+              //      });
+//
+              //      if (response.ok) {
+               //         const gist = await response.json();
+              //          this.gistId = gist.id;
+              //          this.saveConfig();
+              //          return gist.id;
+             //       }
                 } catch (error) {
                     console.error('Ошибка создания Gist:', error);
                 }
