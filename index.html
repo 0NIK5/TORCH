@@ -192,5 +192,69 @@
 
         </div>
     </div>
+<script>
+  const BIN_ID = '68651e498960c979a5b5cda8'; // замените на свой
+  const API_KEY = '$2a$10$M/gppMK6zTHQvIA3TrhwBuZVaCc9/X1zSSwA7ybq68w.2wObDTqwi'; // замените на свой
+  const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Master-Key': API_KEY
+  };
+
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+  // Пронумеруем чекбоксы: data-id="1", "2", ...
+  checkboxes.forEach((cb, index) => {
+    cb.dataset.id = (index + 1).toString();
+  });
+
+  // Загрузка состояния
+  fetch(API_URL, { headers })
+    .then(res => res.json())
+    .then(data => {
+      const states = data.record.checkboxes;
+      checkboxes.forEach(cb => {
+        const id = cb.dataset.id;
+        if (states[id] !== undefined) {
+          cb.checked = states[id];
+        }
+      });
+    });
+
+  // Сохранение при изменении
+  function saveState() {
+    const state = {};
+    checkboxes.forEach(cb => {
+      const id = cb.dataset.id;
+      state[id] = cb.checked;
+    });
+
+    fetch(API_URL, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ checkboxes: state })
+    });
+  }
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', saveState);
+  });
+
+  // Автообновление с сервера раз в 5 секунд
+  setInterval(() => {
+    fetch(API_URL, { headers })
+      .then(res => res.json())
+      .then(data => {
+        const states = data.record.checkboxes;
+        checkboxes.forEach(cb => {
+          const id = cb.dataset.id;
+          if (states[id] !== undefined) {
+            cb.checked = states[id];
+          }
+        });
+      });
+  }, 5000);
+</script>
+    
 </body>
 </html>
