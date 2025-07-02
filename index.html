@@ -10,6 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #394c38 0%, #52734d 100%);
@@ -19,14 +20,23 @@
             justify-content: center;
             color: #333;
         }
+
         .container {
             text-align: center;
             background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 60px 80px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 90vw;
+            transform: translateY(0);
+            transition: all 0.3s ease;
         }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+
         h1 {
             font-size: 48px;
             font-weight: bold;
@@ -37,49 +47,13 @@
             margin: 0 0 30px 0;
             letter-spacing: 2px;
         }
-        .sync-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .sync-status.connected {
-            background: rgba(46, 213, 115, 0.1);
-            color: #27ae60;
-            border: 1px solid rgba(46, 213, 115, 0.3);
-        }
-        .sync-status.local {
-            background: rgba(255, 193, 7, 0.1);
-            color: #f39c12;
-            border: 1px solid rgba(255, 193, 7, 0.3);
-        }
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 2s infinite;
-        }
-        .connected .status-dot {
-            background: #27ae60;
-        }
-        .local .status-dot {
-            background: #f39c12;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
+
         .links-list {
             text-align: left;
             max-width: 600px;
             margin: 0 auto;
         }
+
         .link-item {
             display: flex;
             align-items: center;
@@ -87,21 +61,33 @@
             margin-bottom: 10px;
             background: rgba(116, 185, 255, 0.1);
             border-radius: 12px;
-            text-decoration: none;
             color: #2d3436;
             font-size: 16px;
             transition: all 0.3s ease;
             border-left: 4px solid #74b9ff;
             word-break: break-all;
-        }
-        .checkbox {
-            width: 20px;
-            height: 20px;
-            margin-right: 15px;
-            flex-shrink: 0;
+            text-decoration: none;
             cursor: pointer;
-            accent-color: #74b9ff;
         }
+
+        .link-item:hover {
+            background: rgba(116, 185, 255, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
+        }
+
+        .link-item:active {
+            transform: translateX(3px);
+        }
+
+        .link-item input[type="checkbox"] {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            accent-color: #74b9ff;
+            flex-shrink: 0;
+        }
+
         .link-number {
             background: linear-gradient(45deg, #74b9ff, #0984e3);
             color: white;
@@ -116,24 +102,32 @@
             margin-right: 15px;
             flex-shrink: 0;
         }
+
         .link-text {
             flex: 1;
+            color: #2d3436;
         }
-        .link-item:hover {
-            background: rgba(116, 185, 255, 0.2);
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
-        }
-        .link-item:active {
-            transform: translateX(3px);
-        }
+
         @media (max-width: 768px) {
-            .container { padding: 40px 50px; }
-            h1 { font-size: 36px; letter-spacing: 1px; }
+            .container {
+                padding: 40px 50px;
+            }
+
+            h1 {
+                font-size: 36px;
+                letter-spacing: 1px;
+            }
         }
+
         @media (max-width: 480px) {
-            .container { padding: 30px 40px; margin: 20px; }
-            h1 { font-size: 28px; }
+            .container {
+                padding: 30px 40px;
+                margin: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
