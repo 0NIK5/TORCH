@@ -1,274 +1,259 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Список1</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Список</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #394c38 0%, #52734d 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #333;
-        }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #394c38 0%, #52734d 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
 
-        .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 60px 80px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            transform: translateY(0);
-            transition: all 0.3s ease;
-        }
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 60px 80px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      transform: translateY(0);
+      transition: all 0.3s ease;
+    }
 
-        .container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-        }
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+    }
 
-        h1 {
-            font-size: 48px;
-            font-weight: bold;
-            background: linear-gradient(45deg, #394c38, #52734d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 0 0 30px 0;
-            letter-spacing: 2px;
-        }
+    h1 {
+      font-size: 48px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #394c38, #52734d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 30px 0;
+      letter-spacing: 2px;
+    }
 
-        .links-list {
-            text-align: left;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+    .refresh-btn {
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background: #74b9ff;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
 
-        .link-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            background: rgba(116, 185, 255, 0.1);
-            border-radius: 12px;
-            color: #2d3436;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            border-left: 4px solid #74b9ff;
-            word-break: break-all;
-            text-decoration: none;
-            cursor: pointer;
-        }
+    .refresh-btn:hover {
+      background: #0984e3;
+    }
 
-        .link-item:hover {
-            background: rgba(116, 185, 255, 0.2);
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
-        }
+    .links-list {
+      text-align: left;
+      max-width: 600px;
+      margin: 0 auto;
+    }
 
-        .link-item:active {
-            transform: translateX(3px);
-        }
+    .link-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      background: rgba(116, 185, 255, 0.1);
+      border-radius: 12px;
+      color: #2d3436;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      border-left: 4px solid #74b9ff;
+      word-break: break-word;
+      text-decoration: none;
+      cursor: pointer;
+    }
 
-        .link-item input[type="checkbox"] {
-            margin-right: 15px;
-            width: 18px;
-            height: 18px;
-            accent-color: #74b9ff;
-            flex-shrink: 0;
-        }
+    .link-item:hover {
+      background: rgba(116, 185, 255, 0.2);
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
+    }
 
-        .link-number {
-            background: linear-gradient(45deg, #74b9ff, #0984e3);
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
+    .link-item input[type="checkbox"] {
+      margin-right: 15px;
+      width: 18px;
+      height: 18px;
+      accent-color: #74b9ff;
+      flex-shrink: 0;
+    }
 
-        .link-text {
-            flex: 1;
-            color: #2d3436;
-        }
+    .link-number {
+      background: linear-gradient(45deg, #74b9ff, #0984e3);
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 40px 50px;
-            }
+    .link-text {
+      flex: 1;
+      color: #2d3436;
+    }
 
-            h1 {
-                font-size: 36px;
-                letter-spacing: 1px;
-            }
-        }
+    @media (max-width: 768px) {
+      .container {
+        padding: 40px 50px;
+      }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 30px 40px;
-                margin: 20px;
-            }
+      h1 {
+        font-size: 36px;
+        letter-spacing: 1px;
+      }
+    }
 
-            h1 {
-                font-size: 28px;
-            }
-            <button id="refreshButton" style="
-    margin-bottom: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: none;
-    background: #74b9ff;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
-">
-    🔄 PushButton Refresh Data
-</button>
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 40px;
+        margin: 20px;
+      }
 
-        }
-    </style>
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Список:</h1>
-        <div class="links-list">
+  <div class="container">
+    <h1>Список:</h1>
+    <button id="refreshButton" class="refresh-btn">🔄 PushButton Refresh Data</button>
+    <div class="links-list">
 
-            <label class="link-item">
-                <input type="checkbox">
-                <div class="link-number">1</div>
-                <a href="https://rozetka.com.ua/ua/361908282/p361908282/" target="_blank" class="link-text">rozetka.com.ua/ua/361908282/p361908282/</a>
-            </label>
+      <label class="link-item">
+        <input type="checkbox">
+        <div class="link-number">1</div>
+        <a href="https://rozetka.com.ua/ua/361908282/p361908282/" target="_blank" class="link-text">rozetka.com.ua/ua/361908282/p361908282/</a>
+      </label>
 
-            <label class="link-item">
-                <input type="checkbox">
-                <div class="link-number">2</div>
-                <a href="https://rozetka.com.ua/ua/373058862/p373058862/" target="_blank" class="link-text">rozetka.com.ua/ua/373058862/p373058862/</a>
-            </label>
+      <label class="link-item">
+        <input type="checkbox">
+        <div class="link-number">2</div>
+        <a href="https://rozetka.com.ua/ua/373058862/p373058862/" target="_blank" class="link-text">rozetka.com.ua/ua/373058862/p373058862/</a>
+      </label>
 
-            <label class="link-item">
-                <input type="checkbox">
-                <div class="link-number">3</div>
-                <a href="https://rozetka.com.ua/ua/374194230/p374194230/" target="_blank" class="link-text">rozetka.com.ua/ua/374194230/p374194230/</a>
-            </label>
+      <label class="link-item">
+        <input type="checkbox">
+        <div class="link-number">3</div>
+        <a href="https://rozetka.com.ua/ua/374194230/p374194230/" target="_blank" class="link-text">rozetka.com.ua/ua/374194230/p374194230/</a>
+      </label>
 
-            <label class="link-item">
-                <input type="checkbox">
-                <div class="link-number">4</div>
-                <a href="https://rozetka.com.ua/ua/rockbros-5907769364655/p522330854/" target="_blank" class="link-text">rozetka.com.ua/ua/rockbros-5907769364655/p522330854/</a>
-            </label>
+      <label class="link-item">
+        <input type="checkbox">
+        <div class="link-number">4</div>
+        <a href="https://rozetka.com.ua/ua/rockbros-5907769364655/p522330854/" target="_blank" class="link-text">rozetka.com.ua/ua/rockbros-5907769364655/p522330854/</a>
+      </label>
 
-            <label class="link-item">
-                <input type="checkbox">
-                <div class="link-number">5</div>
-                <a href="https://rozetka.com.ua/ua/443696852/p443696852/" target="_blank" class="link-text">rozetka.com.ua/ua/443696852/p443696852/</a>
-            </label>
+      <label class="link-item">
+        <input type="checkbox">
+        <div class="link-number">5</div>
+        <a href="https://rozetka.com.ua/ua/443696852/p443696852/" target="_blank" class="link-text">rozetka.com.ua/ua/443696852/p443696852/</a>
+      </label>
 
-            <label class="link-item">
-                <input type="checkbox">
-                <div class="link-number">6</div>
-                <a href="https://veloplaneta.ua/ua/fara-moon-titan-mini-700-lyumen-vstroennyy-akkum-usb-type-c-kabel-amg" target="_blank" class="link-text">veloplaneta.ua/ua/fara-moon-titan-mini-700-lyumen...</a>
-            </label>
+      <label class="link-item">
+        <input type="checkbox">
+        <div class="link-number">6</div>
+        <a href="https://veloplaneta.ua/ua/fara-moon-titan-mini-700-lyumen-vstroennyy-akkum-usb-type-c-kabel-amg" target="_blank" class="link-text">veloplaneta.ua/ua/fara-moon-titan-mini-700-lyumen...</a>
+      </label>
 
-            <label class="link-item">
-                <input type="checkbox">
-                <div class="link-number">7</div>
-                <a href="https://veloplaneta.ua/ua/fara-moon-titan-lepus-600-lyumen-vstroennyy-akkum-usb-type-c-kabel-pur" target="_blank" class="link-text">veloplaneta.ua/ua/fara-moon-titan-lepus-600-lyumen...</a>
-            </label>
+      <label class="link-item">
+        <input type="checkbox">
+        <div class="link-number">7</div>
+        <a href="https://veloplaneta.ua/ua/fara-moon-titan-lepus-600-lyumen-vstroennyy-akkum-usb-type-c-kabel-pur" target="_blank" class="link-text">veloplaneta.ua/ua/fara-moon-titan-lepus-600-lyumen...</a>
+      </label>
 
-            <label class="link-item">
-                <input type="checkbox">
-                <div class="link-number">8</div>
-                <a href="https://veloplaneta.ua/ua/fara-perednyaya-infini-super-lava-i-263p-titanium-black-1-svetodiod-3w-4-rezhima-usb-kabel-s-krepl" target="_blank" class="link-text">veloplaneta.ua/ua/fara-perednyaya-infini-super-lava...</a>
-            </label>
+      <label class="link-item">
+        <input type="checkbox">
+        <div class="link-number">8</div>
+        <a href="https://veloplaneta.ua/ua/fara-perednyaya-infini-super-lava-i-263p-titanium-black-1-svetodiod-3w-4-rezhima-usb-kabel-s-krepl" target="_blank" class="link-text">veloplaneta.ua/ua/fara-perednyaya-infini-super-lava...</a>
+      </label>
 
-            <label class="link-item">
-                <input type="checkbox">
-                <div class="link-number">9</div>
-                <a href="https://veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive-400-lyumen-8-rezhimov-fioletovaya" target="_blank" class="link-text">veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive...</a>
-            </label>
+      <label class="link-item">
+        <input type="checkbox">
+        <div class="link-number">9</div>
+        <a href="https://veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive-400-lyumen-8-rezhimov-fioletovaya" target="_blank" class="link-text">veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive...</a>
+      </label>
 
-        </div>
     </div>
-<script>
-  const BIN_ID = '68651e498960c979a5b5cda8'; // замените на свой
-  const API_KEY = '$2a$10$M/gppMK6zTHQvIA3TrhwBuZVaCc9/X1zSSwA7ybq68w.2wObDTqwi'; // замените на свой
-  const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-Master-Key': API_KEY
-  };
+  </div>
 
-  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  <script>
+    const BIN_ID = '68651e498960c979a5b5cda8'; // ← сюда вставь свой ID
+    const API_KEY = '$2a$10$M/gppMK6zTHQvIA3TrhwBuZVaCc9/X1zSSwA7ybq68w.2wObDTqwi'; // ← сюда вставь свой ключ
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Master-Key': API_KEY
+    };
 
-  // Пронумеруем чекбоксы: data-id="1", "2", ...
-  checkboxes.forEach((cb, index) => {
-    cb.dataset.id = (index + 1).toString();
-  });
-
-  // Загрузка состояния
-  fetch(API_URL, { headers })
-    .then(res => res.json())
-    .then(data => {
-      const states = data.record.checkboxes;
-      checkboxes.forEach(cb => {
-        const id = cb.dataset.id;
-        if (states[id] !== undefined) {
-          cb.checked = states[id];
-        }
-      });
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((cb, index) => {
+      cb.dataset.id = (index + 1).toString();
     });
 
-  // Сохранение при изменении
-  function saveState() {
-    const state = {};
+    function loadState() {
+      fetch(API_URL, { headers })
+        .then(res => res.json())
+        .then(data => {
+          const states = data.record.checkboxes;
+          checkboxes.forEach(cb => {
+            const id = cb.dataset.id;
+            if (states[id] !== undefined) {
+              cb.checked = states[id];
+            }
+          });
+        });
+    }
+
+    function saveState() {
+      const state = {};
+      checkboxes.forEach(cb => {
+        state[cb.dataset.id] = cb.checked;
+      });
+      fetch(API_URL, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ checkboxes: state })
+      });
+    }
+
     checkboxes.forEach(cb => {
-      const id = cb.dataset.id;
-      state[id] = cb.checked;
+      cb.addEventListener('change', saveState);
     });
 
-    fetch(API_URL, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify({ checkboxes: state })
-    });
-  }
+    document.getElementById('refreshButton').addEventListener('click', loadState);
 
-  checkboxes.forEach(cb => {
-    cb.addEventListener('change', saveState);
-  });
-
-  // Автообновление с сервера раз в 5 секунд
-  document.getElementById('refreshButton').addEventListener('click', () => {
-  fetch(API_URL, { headers })
-    .then(res => res.json())
-    .then(data => {
-      const states = data.record.checkboxes;
-      checkboxes.forEach(cb => {
-        const id = cb.dataset.id;
-        if (states[id] !== undefined) {
-          cb.checked = states[id];
-        }
-      });
-    });
-});
-</script>
-    
+    // Загрузка при открытии
+    loadState();
+  </script>
 </body>
 </html>
