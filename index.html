@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Список с синхронизацией</title>
+    <title>Список</title>
     <style>
         * {
             margin: 0;
@@ -133,209 +133,64 @@
 </head>
 <body>
     <div class="container">
-        <h1>Варики:</h1>
-        <div id="syncStatus" class="sync-status local">
-            <div class="status-dot"></div>
-            <span>Локальное сохранение</span>
-        </div>
+        <h1>Список:</h1>
         <div class="links-list">
-            <a href="https://rozetka.com.ua/ua/361908282/p361908282/" target="_blank" class="link-item">
-                <input type="checkbox" class="checkbox" data-id="0">
+
+            <label class="link-item">
+                <input type="checkbox">
                 <div class="link-number">1</div>
-                <div class="link-text">rozetka.com.ua/ua/361908282/p361908282/</div>
-            </a>
-            <a href="https://rozetka.com.ua/ua/373058862/p373058862/" target="_blank" class="link-item">
-                <input type="checkbox" class="checkbox" data-id="1">
+                <a href="https://rozetka.com.ua/ua/361908282/p361908282/" target="_blank" class="link-text">rozetka.com.ua/ua/361908282/p361908282/</a>
+            </label>
+
+            <label class="link-item">
+                <input type="checkbox">
                 <div class="link-number">2</div>
-                <div class="link-text">rozetka.com.ua/ua/373058862/p373058862/</div>
-            </a>
-            <a href="https://rozetka.com.ua/ua/374194230/p374194230/" target="_blank" class="link-item">
-                <input type="checkbox" class="checkbox" data-id="2">
+                <a href="https://rozetka.com.ua/ua/373058862/p373058862/" target="_blank" class="link-text">rozetka.com.ua/ua/373058862/p373058862/</a>
+            </label>
+
+            <label class="link-item">
+                <input type="checkbox">
                 <div class="link-number">3</div>
-                <div class="link-text">rozetka.com.ua/ua/374194230/p374194230/</div>
-            </a>
-            <a href="https://rozetka.com.ua/ua/rockbros-5907769364655/p522330854/" target="_blank" class="link-item">
-                <input type="checkbox" class="checkbox" data-id="3">
+                <a href="https://rozetka.com.ua/ua/374194230/p374194230/" target="_blank" class="link-text">rozetka.com.ua/ua/374194230/p374194230/</a>
+            </label>
+
+            <label class="link-item">
+                <input type="checkbox">
                 <div class="link-number">4</div>
-                <div class="link-text">rozetka.com.ua/ua/rockbros-5907769364655/p522330854/</div>
-            </a>
-            <a href="https://rozetka.com.ua/ua/443696852/p443696852/" target="_blank" class="link-item">
-                <input type="checkbox" class="checkbox" data-id="4">
+                <a href="https://rozetka.com.ua/ua/rockbros-5907769364655/p522330854/" target="_blank" class="link-text">rozetka.com.ua/ua/rockbros-5907769364655/p522330854/</a>
+            </label>
+
+            <label class="link-item">
+                <input type="checkbox">
                 <div class="link-number">5</div>
-                <div class="link-text">rozetka.com.ua/ua/443696852/p443696852/</div>
-            </a>
-            <a href="https://veloplaneta.ua/ua/fara-moon-titan-mini-700-lyumen-vstroennyy-akkum-usb-type-c-kabel-amg" target="_blank" class="link-item">
-                <input type="checkbox" class="checkbox" data-id="5">
+                <a href="https://rozetka.com.ua/ua/443696852/p443696852/" target="_blank" class="link-text">rozetka.com.ua/ua/443696852/p443696852/</a>
+            </label>
+
+            <label class="link-item">
+                <input type="checkbox">
                 <div class="link-number">6</div>
-                <div class="link-text">veloplaneta.ua/ua/fara-moon-titan-mini-700-lyumen-vstroennyy-akkum-usb-type-c-kabel-amg</div>
-            </a>
-            <a href="https://veloplaneta.ua/ua/fara-moon-titan-lepus-600-lyumen-vstroennyy-akkum-usb-type-c-kabel-pur" target="_blank" class="link-item">
-                <input type="checkbox" class="checkbox" data-id="6">
+                <a href="https://veloplaneta.ua/ua/fara-moon-titan-mini-700-lyumen-vstroennyy-akkum-usb-type-c-kabel-amg" target="_blank" class="link-text">veloplaneta.ua/ua/fara-moon-titan-mini-700-lyumen...</a>
+            </label>
+
+            <label class="link-item">
+                <input type="checkbox">
                 <div class="link-number">7</div>
-                <div class="link-text">veloplaneta.ua/ua/fara-moon-titan-lepus-600-lyumen-vstroennyy-akkum-usb-type-c-kabel-pur</div>
-            </a>
-            <a href="https://veloplaneta.ua/ua/fara-perednyaya-infini-super-lava-i-263p-titanium-black-1-svetodiod-3w-4-rezhima-usb-kabel-s-krepl" target="_blank" class="link-item">
-                <input type="checkbox" class="checkbox" data-id="7">
+                <a href="https://veloplaneta.ua/ua/fara-moon-titan-lepus-600-lyumen-vstroennyy-akkum-usb-type-c-kabel-pur" target="_blank" class="link-text">veloplaneta.ua/ua/fara-moon-titan-lepus-600-lyumen...</a>
+            </label>
+
+            <label class="link-item">
+                <input type="checkbox">
                 <div class="link-number">8</div>
-                <div class="link-text">veloplaneta.ua/ua/fara-perednyaya-infini-super-lava-i-263p-titanium-black-1-svetodiod-3w-4-rezhima-usb-kabel-s-krepl</div>
-            </a>
-            <a href="https://veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive-400-lyumen-8-rezhimov-fioletovaya" target="_blank" class="link-item">
-                <input type="checkbox" class="checkbox" data-id="8">
+                <a href="https://veloplaneta.ua/ua/fara-perednyaya-infini-super-lava-i-263p-titanium-black-1-svetodiod-3w-4-rezhima-usb-kabel-s-krepl" target="_blank" class="link-text">veloplaneta.ua/ua/fara-perednyaya-infini-super-lava...</a>
+            </label>
+
+            <label class="link-item">
+                <input type="checkbox">
                 <div class="link-number">9</div>
-                <div class="link-text">veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive-400-lyumen-8-rezhimov-fioletovaya</div>
-            </a>
+                <a href="https://veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive-400-lyumen-8-rezhimov-fioletovaya" target="_blank" class="link-text">veloplaneta.ua/ua/fara-perednyaya-lezyne-mini-drive...</a>
+            </label>
+
         </div>
     </div>
-    <script>
-        class CheckboxSync {
-            constructor() {
-                this.token = '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';
-                this.gistId = 'bc691d2a48497726dac05b004e04f5bc';
-                this.syncInterval = null;
-                this.lastSync = 0;
-                this.syncInProgress = false;
-                this.filename = 'checkbox-states.json';
-                this.init();
-            }
-
-            async init() {
-                await this.loadStates();
-                this.setupEventListeners();
-                this.startSync();
-                this.updateStatus();
-            }
-
-            setupEventListeners() {
-                document.querySelectorAll('.checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', async () => {
-                        await this.saveStates();
-                        setTimeout(() => this.syncFromGitHub(), 500);
-                    });
-                });
-                document.addEventListener('visibilitychange', () => {
-                    if (!document.hidden && this.token) this.syncFromGitHub();
-                });
-                window.addEventListener('focus', () => {
-                    if (this.token) this.syncFromGitHub();
-                });
-            }
-
-            getCurrentStates() {
-                const states = {};
-                document.querySelectorAll('.checkbox').forEach(checkbox => {
-                    const id = checkbox.getAttribute('data-id');
-                    states[id] = checkbox.checked;
-                });
-                return states;
-            }
-
-            applyStates(states) {
-                document.querySelectorAll('.checkbox').forEach(checkbox => {
-                    const id = checkbox.getAttribute('data-id');
-                    if (states[id] !== undefined) checkbox.checked = states[id];
-                });
-            }
-
-            async saveStates() {
-                const states = this.getCurrentStates();
-                localStorage.setItem('checkboxStates', JSON.stringify(states));
-                if (this.token && this.gistId) await this.saveToGitHub(states);
-            }
-
-            async loadStates() {
-                if (this.token && this.gistId) {
-                    const githubStates = await this.loadFromGitHub();
-                    if (githubStates) {
-                        this.applyStates(githubStates.states);
-                        this.lastSync = githubStates.timestamp || 0;
-                        return;
-                    }
-                }
-                const localStates = JSON.parse(localStorage.getItem('checkboxStates') || '{}');
-                this.applyStates(localStates);
-            }
-
-            async loadFromGitHub() {
-                try {
-                    const response = await fetch(`https://api.github.com/gists/${this.gistId}`, {
-                        headers: { 'Authorization': `token ${this.token}` }
-                    });
-                    if (response.ok) {
-                        const gist = await response.json();
-                        const content = gist.files[this.filename]?.content;
-                        return content ? JSON.parse(content) : null;
-                    }
-                } catch (error) {
-                    console.error('Ошибка загрузки с GitHub:', error);
-                }
-                return null;
-            }
-
-            async saveToGitHub(states) {
-                if (!this.token || !this.gistId || this.syncInProgress) return false;
-                this.syncInProgress = true;
-                try {
-                    const response = await fetch(`https://api.github.com/gists/${this.gistId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Authorization': `token ${this.token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            files: {
-                                [this.filename]: {
-                                    content: JSON.stringify({
-                                        states: states,
-                                        timestamp: Date.now()
-                                    })
-                                }
-                            }
-                        })
-                    });
-                    if (response.ok) {
-                        this.lastSync = Date.now();
-                        this.updateStatus();
-                        return true;
-                    }
-                } catch (error) {
-                    console.error('Ошибка сохранения в GitHub:', error);
-                } finally {
-                    this.syncInProgress = false;
-                }
-                return false;
-            }
-
-            async syncFromGitHub() {
-                if (!this.token || !this.gistId || this.syncInProgress) return;
-                const githubData = await this.loadFromGitHub();
-                if (githubData && githubData.timestamp > this.lastSync) {
-                    this.applyStates(githubData.states);
-                    this.lastSync = githubData.timestamp;
-                    this.updateStatus();
-                }
-            }
-
-            startSync() {
-                if (this.syncInterval) clearInterval(this.syncInterval);
-                this.syncInterval = setInterval(() => this.syncFromGitHub(), 2000);
-            }
-
-            updateStatus() {
-                const statusElement = document.getElementById('syncStatus');
-                if (this.token && this.gistId) {
-                    statusElement.className = 'sync-status connected';
-                    statusElement.innerHTML = '<div class="status-dot"></div><span>Синхронизация активна</span>';
-                } else {
-                    statusElement.className = 'sync-status local';
-                    statusElement.innerHTML = '<div class="status-dot"></div><span>Локальное сохранение</span>';
-                }
-            }
-        }
-
-        let checkboxSync;
-        document.addEventListener('DOMContentLoaded', () => {
-            checkboxSync = new CheckboxSync();
-        });
-    </script>
 </body>
 </html>
